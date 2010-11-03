@@ -16,6 +16,10 @@ namespace grief {
 	public:
 		Connection(std::string host, int port);
 		~Connection();
+
+	protected:
+		void send(void *buf, size_t size);
+		void recv(void *buf, size_t size);
 	};
 };
 

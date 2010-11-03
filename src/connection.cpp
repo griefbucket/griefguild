@@ -20,4 +20,16 @@ namespace grief {
 	Connection::~Connection() {
 		close(sock);
 	}
+
+	void Connection::send(void *buf, size_t size) {
+		if (0 > ::send(sock, buf, size, 0)) {
+			throw std::exception();
+		}
+	}
+
+	void Connection::recv(void *buf, size_t size) {
+		if (0 > ::recv(sock, buf, size, MSG_WAITALL)) {
+			throw std::exception();
+		}
+	}
 };
