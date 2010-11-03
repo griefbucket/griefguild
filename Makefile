@@ -1,6 +1,6 @@
 all:
 	rm -f src/*.gch 
 
-	g++ -g src/* -lzmq
+	g++ -g src/* 
 
 	rm -f src/*.gch
