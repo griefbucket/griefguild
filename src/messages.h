@@ -40,6 +40,9 @@ namespace grief {
 		, DISCONNECT = 0xFF
 		};
 
+	typedef int EntityID;
+	typedef short ItemID;
+
 	class IMessage {
 	protected:
 		char *msgbuf;
@@ -149,7 +152,7 @@ namespace grief {
 	template <>
 	class Message<PLAYER_BLOCK_PLACE> : IMessage {
 	public:
-		short itemId;
+		ItemID item;
 		int x;
 		char y;
 		int z;
@@ -160,13 +163,13 @@ namespace grief {
 	class Message<PLAYER_HOLD> : IMessage {
 	public:
 		int unused;
-		short itemId;
+		ItemID item;
 	};
 
 	template <>
 	class Message<INVENTORY_ADD> : IMessage {
 	public:
-		short itemId;
+		ItemID item;
 		char count;
 		short life;
 	};
@@ -174,14 +177,14 @@ namespace grief {
 	template <>
 	class Message<ENTITY_SWING> : IMessage {
 	public:
-		int entityId;
+		EntityID entity;
 		bool animate;
 	};
 
 	template <>
 	class Message<ENTITY_SPAWN> : IMessage {
 	public:
-		int entityId;
+		EntityID entity;
 		std::string playerName;
 		int x, y, z;
 		char rotation;
@@ -192,8 +195,8 @@ namespace grief {
 	template <>
 	class Message<PICKUP_SPAWN> : IMessage {
 	public:
-		int entityId;
-		short itemId;
+		EntityID entity;
+		ItemID item;
 		char count;
 		int x, y, z;
 		char rotation;
@@ -204,14 +207,14 @@ namespace grief {
 	template <>
 	class Message<PICKUP_COLLECT> : IMessage {
 	public:
-		int itemId;
-		int entityId;
+		ItemID item;
+		EntityID entity;
 	};
 
 	template <>
 	class Message<OBJECT_SPAWN> : IMessage {
 	public:
-		int entityId;
+		EntityID entity;
 		char type;
 		int x, y, z;
 	};
@@ -219,7 +222,7 @@ namespace grief {
 	template <>
 	class Message<MOB_SPAWN> : IMessage {
 	public:
-		int entityId;
+		EntityID entity;
 		char type;
 		int x, y, z;
 		char yaw, pitch;
@@ -228,33 +231,33 @@ namespace grief {
 	template <>
 	class Message<ENTITY_DESTROY> : IMessage {
 	public:
-		int entityId;
+		EntityID entity;
 	};
 
 	template <>
 	class Message<ENTITY> : IMessage {
 	public:
-		int entityId;
+		EntityID entity;
 	};
 
 	template <>
 	class Message<ENTITY_MOVE> : IMessage {
 	public:
-		int entityId;
+		EntityID entity;
 		char x, y, z;
 	};
 
 	template <>
 	class Message<ENTITY_LOOK> : IMessage {
 	public:
-		int entityId;
+		EntityID entity;
 		char yaw, pitch;
 	};
 
 	template <>
 	class Message<ENTITY_LOOK_MOVE> : IMessage {
 	public:
-		int entityId;
+		EntityID entity;
 		char x, y, z;
 		char yaw, pitch;
 	};
@@ -262,7 +265,7 @@ namespace grief {
 	template <>
 	class Message<ENTITY_TELEPORT> : IMessage {
 	public:
-		int entityId;
+		EntityID entity;
 		int x, y, z;
 		char yaw, pitch;
 	};
