@@ -1,6 +1,7 @@
 *.o
 *.lo
 *.la
+*.gch
 *.swp
 .libs
 a.out*
