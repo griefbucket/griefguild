@@ -1,8 +1,8 @@
-#include "connection.h"
+#include "tcpconnection.h"
 #include <exception>
 
 namespace grief {
-	Connection::Connection(std::string hostname, int port) {
+	TCPConnection::TCPConnection(std::string hostname, int port) {
 		if (0 > (this->sock = socket(AF_INET, SOCK_STREAM, 0))) {
 			throw std::exception();
 		}
@@ -17,17 +17,17 @@ namespace grief {
 		memcpy(&sin.sin_addr, host->h_addr, host->h_length);
 	}
 
-	Connection::~Connection() {
+	TCPConnection::~TCPConnection() {
 		close(sock);
 	}
 
-	void Connection::send(void *buf, size_t size) {
+	void TCPConnection::send(void *buf, size_t size) {
 		if (0 > ::send(sock, buf, size, 0)) {
 			throw std::exception();
 		}
 	}
 
-	void Connection::recv(void *buf, size_t size) {
+	void TCPConnection::recv(void *buf, size_t size) {
 		if (0 > ::recv(sock, buf, size, MSG_WAITALL)) {
 			throw std::exception();
 		}

@@ -1,8 +1,8 @@
-#include "connection.h"
+#include "tcpconnection.h"
 #include <iostream>
 
 int main(int argc, char **argv) {
-	grief::Connection c("minecraft", 25526);
+	grief::TCPConnection c("minecraft", 25526);
 
 	std::cout << "Connected!" << std::endl;
 
