@@ -14,7 +14,19 @@ namespace grief {
 		delete[] buf;
 	}
 
-	IMessage* Connection::nextMessage() {
-		return NULL;
+	char* Connection::readBytes(size_t len) {
+		if (bufSize < len) {
+			delete[] buf;
+			buf = new char[len + 1];
+		}
+
+		memset(buf, 0, len + 1);
+
+		TCPConnection::recv(buf, len);
+		return buf;
+	}
+
+	void Connection::writeBytes(void *buf, size_t len) {
+		TCPConnection::send(buf, len);
 	}
 };
