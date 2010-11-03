@@ -8,6 +8,7 @@ namespace grief {
 #include "tcpconnection.h"
 
 #include <string>
+#include <zlib.h>
 
 namespace grief {
 	namespace impl {
@@ -36,6 +37,8 @@ namespace grief {
 		void write(T value) {
 			impl::StreamMarshaller<T>::write(this, value);	
 		}
+
+		char *readCompressedBytes(size_t length);
 	};
 
 	namespace impl {

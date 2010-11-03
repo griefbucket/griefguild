@@ -14,6 +14,34 @@ namespace grief {
 		delete[] buf;
 	}
 
+	char *readCompressedBytes(size_t len) {
+		const size_t CHUNKSIZE = 4096;
+		unsigned char out[CHUNKSIZE];
+		char *source = readBytes(len);
+
+		z_stream strm;
+		strm.zalloc = Z_NULL;
+		strm.zfree = Z_NULL;
+		strm.opaque = Z_NULL;
+		strm.avail_in = 0;
+		strm.next_in = Z_NULL;
+
+		if (Z_OK != inflateInit(&strm))
+			throw std::exception();
+
+		strm.avail_in = len;
+		strm.next_in = source;
+
+		do {
+			strm.avail_out = CHUNK;
+			strm.next_out = out;
+
+			if (Z_OK != inflate(&strm, Z_NO_FLUSH))
+				throw std::exception();
+
+			/* XXX */
+	}
+
 	char* Connection::readBytes(size_t len) {
 		if (bufSize < len) {
 			delete[] buf;
