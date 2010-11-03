@@ -3,6 +3,7 @@
 
 #include "connection.h"
 #include "inventory.h"
+#include "map.h"
 
 #include <string>
 
@@ -665,19 +666,20 @@ namespace grief {
 	template <>
 	class Message<CHUNK_DATA> : IMessage {
 	public:
-		int x;
-		short y;
-		int z;
-		char sizeX, sizeY, sizeZ;
-		int compressedSize;
-		char *compressedData;
+		MapChunk chunk;
 
 		virtual void send(Connection *conn) {
 			/* XXX */
 		}
 
 		virtual void recv(Connection *conn) {
-			/* XXX */
+			chunk.x = conn->read<int>();
+			chunk.y = conn->read<short>();
+			chunk.z = conn->read<int>();
+			chunk.sizeX = conn->read<char>();
+			chunk.sizeY = conn->read<char>();
+			chunk.sizeZ = conn->read<char>();
+			/* XXX: ungzip the data */
 		}
 	};
 
