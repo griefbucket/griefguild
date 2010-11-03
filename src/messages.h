@@ -1,6 +1,7 @@
 #ifndef GUARD_GRIEF_MESSAGES
 #define GUARD_GRIEF_MESSAGES
 
+#include "connection.h"
 #include <string>
 
 namespace grief {
@@ -44,17 +45,9 @@ namespace grief {
 	typedef short ItemID;
 
 	class IMessage {
-	protected:
-		char *msgbuf;
-		size_t msgsize;
-
 	public:
-		virtual ~IMessage() {
-			if (msgbuf)
-				delete[] msgbuf;
-		}
-
-		virtual void serialize(void **buf, size_t *size);
+		virtual void send(Connection *conn);
+		virtual void recv(Connection *conn);
 	};
 
 	template <int type> class Message;
@@ -62,10 +55,11 @@ namespace grief {
 	template <>
 	class Message<KEEP_ALIVE> : IMessage {
 	public:
-		virtual void serialize(void **buf, size_t *size) {
-			msgbuf = new char[1];
-			*buf = msgbuf;
-			*size = 0;
+		virtual void send(Connection *conn) {
+			conn->write(KEEP_ALIVE);
+		}
+
+		virtual void recv(Connection *conn) {
 		}
 	};
 
@@ -77,24 +71,64 @@ namespace grief {
 		std::string password;
 		long mapSeed;
 		char dimension;
+
+		virtual void send(Connection *conn) {
+			conn->write(protocolVersion);
+			conn->write(username);
+			conn->write(password);
+			conn->write(mapSeed);
+			conn->write(dimension);
+		}
+
+		virtual void recv(Connection *conn) {
+			protocolVersion = conn->read<int>();
+			username = conn->read<std::string>();
+			password = conn->read<std::string>();
+			mapSeed = conn->read<long>();
+			dimension = conn->read<char>();
+		}
 	};
 
 	template <>
 	class Message<HANDSHAKE> : IMessage {
 	public:
 		std::string username;
+
+		virtual void send(Connection *conn) {
+			conn->write(username);
+		}
+
+		virtual void recv(Connection *conn) {
+			username = conn->read<std::string>();
+		}
 	};
 
 	template <>
 	class Message<CHAT> : IMessage {
 	public:
 		std::string message;
+
+		virtual void send(Connection *conn) {
+			conn->write(message);
+		}
+
+		virtual void recv(Connection *conn) {
+			message = conn->read<std::string>();
+		}
 	};
 
 	template <>
 	class Message<TIME_UPDATE> : IMessage {
 	public:
 		long time;
+
+		virtual void send(Connection *conn) {
+			conn->write(time);
+		}
+
+		virtual void recv(Connection *conn) {
+			time = conn->read<long>();
+		}
 	};
 
 	template <>
@@ -103,18 +137,50 @@ namespace grief {
 		int type;
 		short count;
 		char *payload;
+
+		virtual void send(Connection *conn) {
+			conn->write(type);
+			conn->write(count);
+			/* XXX: payload */
+		}
+
+		virtual void recv(Connection *conn) {
+			type = conn->read<int>();
+			count = conn->read<short>();
+			/* XXX: payload */
+		}
 	};
 
 	template <>
 	class Message<PLAYER_SPAWN> : IMessage {
 	public:
 		int x, y, z;
+
+		virtual void send(Connection *conn) {
+			conn->write(x);
+			conn->write(y);
+			conn->write(z);
+		}
+
+		virtual void recv(Connection *conn) {
+			x = conn->read<int>();
+			y = conn->read<int>();
+			z = conn->read<int>();
+		}
 	};
 
 	template <>
 	class Message<PLAYER> : IMessage {
 	public:
 		bool onGround;
+
+		virtual void send(Connection *conn) {
+			conn->write(onGround);
+		}
+
+		virtual void recv(Connection *conn) {
+			onGround = conn->read<bool>();
+		}
 	};
 
 	template <>
@@ -122,6 +188,22 @@ namespace grief {
 	public:
 		double x, y, stance, z;
 		bool onGround;
+
+		virtual void send(Connection *conn) {
+			conn->write(x);
+			conn->write(y);
+			conn->write(stance);
+			conn->write(z);
+			conn->write(onGround);
+		}
+
+		virtual void recv(Connection *conn) {
+			x = conn->read<double>();
+			y = conn->read<double>();
+			stance = conn->read<double>();
+			z = conn->read<double>();
+			onGround = conn->read<bool>();
+		}
 	};
 
 	template <>
@@ -129,6 +211,18 @@ namespace grief {
 	public:
 		float yaw, pitch;
 		bool onGround;
+
+		virtual void send(Connection *conn) {
+			conn->write(yaw);
+			conn->write(pitch);
+			conn->write(onGround);
+		}
+
+		virtual void recv(Connection *conn) {
+			yaw = conn->read<float>();
+			pitch = conn->read<float>();
+			onGround = conn->read<bool>();
+		}
 	};
 
 	template <>
@@ -137,6 +231,26 @@ namespace grief {
 		double x, y, stance, z;
 		float yaw, pitch;
 		bool onGround;
+
+		virtual void send(Connection *conn) {
+			conn->write(x);
+			conn->write(y);
+			conn->write(stance);
+			conn->write(z);
+			conn->write(yaw);
+			conn->write(pitch);
+			conn->write(onGround);
+		}
+
+		virtual void recv(Connection *conn) {
+			x = conn->read<double>();
+			y = conn->read<double>();
+			stance = conn->read<double>();
+			z = conn->read<double>();
+			yaw = conn->read<float>();
+			pitch = conn->read<float>();
+			onGround = conn->read<bool>();
+		}
 	};
 
 	template <>
@@ -147,6 +261,22 @@ namespace grief {
 		char y;
 		int z;
 		char face;
+
+		virtual void send(Connection *conn) {
+			conn->write(status);
+			conn->write(x);
+			conn->write(y);
+			conn->write(z);
+			conn->write(face);
+		}
+
+		virtual void recv(Connection *conn) {
+			status = conn->read<char>();
+			x = conn->read<int>();
+			y = conn->read<char>();
+			z = conn->read<int>();
+			face = conn->read<char>();
+		}
 	};
 
 	template <>
@@ -157,6 +287,22 @@ namespace grief {
 		char y;
 		int z;
 		char direction;
+
+		virtual void send(Connection *conn) {
+			conn->write(item);
+			conn->write(x);
+			conn->write(y);
+			conn->write(z);
+			conn->write(direction);
+		}
+
+		virtual void recv(Connection *conn) {
+			item = conn->read<ItemID>();
+			x = conn->read<int>();
+			y = conn->read<char>();
+			z = conn->read<int>();
+			direction = conn->read<char>();
+		}
 	};
 
 	template <>
@@ -164,6 +310,16 @@ namespace grief {
 	public:
 		int unused;
 		ItemID item;
+
+		virtual void send(Connection *conn) {
+			conn->write(unused);
+			conn->write(item);
+		}
+
+		virtual void recv(Connection *conn) {
+			unused = conn->read<int>();
+			item = conn->read<ItemID>();
+		}
 	};
 
 	template <>
@@ -172,6 +328,18 @@ namespace grief {
 		ItemID item;
 		char count;
 		short life;
+
+		virtual void send(Connection *conn) {
+			conn->write(item);
+			conn->write(count);
+			conn->write(life);
+		}
+
+		virtual void recv(Connection *conn) {
+			item = conn->read<ItemID>();
+			count = conn->read<char>();
+			life = conn->read<short>();
+		}
 	};
 
 	template <>
@@ -179,6 +347,16 @@ namespace grief {
 	public:
 		EntityID entity;
 		bool animate;
+
+		virtual void send(Connection *conn) {
+			conn->write(entity);
+			conn->write(animate);
+		}
+
+		virtual void recv(Connection *conn) {
+			entity = conn->read<EntityID>();
+			animate = conn->read<bool>();
+		}
 	};
 
 	template <>
@@ -190,6 +368,28 @@ namespace grief {
 		char rotation;
 		char pitch;
 		short holdingItemId;
+
+		virtual void send(Connection *conn) {
+			conn->write(entity);
+			conn->write(playerName);
+			conn->write(x);
+			conn->write(y);
+			conn->write(z);
+			conn->write(rotation);
+			conn->write(pitch);
+			conn->write(holdingItemId);
+		}
+
+		virtual void recv(Connection *conn) {
+			entity = conn->read<EntityID>();
+			playerName = conn->read<std::string>();
+			x = conn->read<int>();
+			y = conn->read<int>();
+			z = conn->read<int>();
+			rotation = conn->read<char>();
+			pitch = conn->read<char>();
+			holdingItemId = conn->read<short>();
+		}
 	};
 
 	template <>
@@ -202,6 +402,30 @@ namespace grief {
 		char rotation;
 		char pitch;
 		char roll;
+
+		virtual void send(Connection *conn) {
+			conn->write(entity);
+			conn->write(item);
+			conn->write(count);
+			conn->write(x);
+			conn->write(y);
+			conn->write(z);
+			conn->write(rotation);
+			conn->write(pitch);
+			conn->write(roll);
+		}
+
+		virtual void recv(Connection *conn) {
+			entity = conn->read<EntityID>();
+			item = conn->read<ItemID>();
+			count = conn->read<char>();
+			x = conn->read<int>();
+			y = conn->read<int>();
+			z = conn->read<int>();
+			rotation = conn->read<char>();
+			pitch = conn->read<char>();
+			roll = conn->read<char>();
+		}
 	};
 
 	template <>
@@ -209,6 +433,16 @@ namespace grief {
 	public:
 		ItemID item;
 		EntityID entity;
+
+		virtual void send(Connection *conn) {
+			conn->write(item);
+			conn->write(entity);
+		}
+		
+		virtual void recv(Connection *conn) {
+			item = conn->read<ItemID>();
+			entity = conn->read<EntityID>();
+		}
 	};
 
 	template <>
@@ -217,6 +451,22 @@ namespace grief {
 		EntityID entity;
 		char type;
 		int x, y, z;
+
+		virtual void send(Connection *conn) {
+			conn->write(entity);
+			conn->write(type);
+			conn->write(x);
+			conn->write(y);
+			conn->write(z);
+		}
+
+		virtual void recv(Connection *conn) {
+			entity = conn->read<EntityID>();
+			type = conn->read<char>();
+			x = conn->read<int>();
+			y = conn->read<int>();
+			z = conn->read<int>();
+		}
 	};
 
 	template <>
@@ -226,18 +476,54 @@ namespace grief {
 		char type;
 		int x, y, z;
 		char yaw, pitch;
+
+		virtual void send(Connection *conn) {
+			conn->write(entity);
+			conn->write(type);
+			conn->write(x);
+			conn->write(y);
+			conn->write(z);
+			conn->write(yaw);
+			conn->write(pitch);
+		}
+
+		virtual void recv(Connection *conn) {
+			entity = conn->read<EntityID>();
+			type = conn->read<char>();
+			x = conn->read<int>();
+			y = conn->read<int>();
+			z = conn->read<int>();
+			yaw = conn->read<char>();
+			pitch = conn->read<char>();
+		}
 	};
 
 	template <>
 	class Message<ENTITY_DESTROY> : IMessage {
 	public:
 		EntityID entity;
+
+		virtual void send(Connection *conn) {
+			conn->write(entity);
+		}
+
+		virtual void recv(Connection *conn) {
+			entity = conn->read<EntityID>();
+		}
 	};
 
 	template <>
 	class Message<ENTITY> : IMessage {
 	public:
 		EntityID entity;
+
+		virtual void send(Connection *conn) {
+			conn->write(entity);
+		}
+
+		virtual void recv(Connection *conn) {
+			entity = conn->read<EntityID>();
+		}
 	};
 
 	template <>
@@ -245,6 +531,20 @@ namespace grief {
 	public:
 		EntityID entity;
 		char x, y, z;
+
+		virtual void send(Connection *conn) {
+			conn->write(entity);
+			conn->write(x);
+			conn->write(y);
+			conn->write(z);
+		}
+
+		virtual void recv(Connection *conn) {
+			entity = conn->read<EntityID>();
+			x = conn->read<char>();
+			y = conn->read<char>();
+			z = conn->read<char>();
+		}
 	};
 
 	template <>
@@ -252,6 +552,18 @@ namespace grief {
 	public:
 		EntityID entity;
 		char yaw, pitch;
+
+		virtual void send(Connection *conn) {
+			conn->write(entity);
+			conn->write(yaw);
+			conn->write(pitch);
+		}
+
+		virtual void recv(Connection *conn) {
+			entity = conn->read<EntityID>();
+			yaw = conn->read<char>();
+			pitch = conn->read<char>();
+		}
 	};
 
 	template <>
@@ -260,6 +572,24 @@ namespace grief {
 		EntityID entity;
 		char x, y, z;
 		char yaw, pitch;
+
+		virtual void send(Connection *conn) {
+			conn->write(entity);
+			conn->write(x);
+			conn->write(y);
+			conn->write(z);
+			conn->write(yaw);
+			conn->write(pitch);
+		}
+
+		virtual void recv(Connection *conn) {
+			entity = conn->read<EntityID>();
+			x = conn->read<char>();
+			y = conn->read<char>();
+			z = conn->read<char>();
+			yaw = conn->read<char>();
+			pitch = conn->read<char>();
+		}
 	};
 
 	template <>
@@ -268,6 +598,24 @@ namespace grief {
 		EntityID entity;
 		int x, y, z;
 		char yaw, pitch;
+
+		virtual void send(Connection *conn) {
+			conn->write(entity);
+			conn->write(x);
+			conn->write(y);
+			conn->write(z);
+			conn->write(yaw);
+			conn->write(pitch);
+		}
+
+		virtual void recv(Connection *conn) {
+			entity = conn->read<EntityID>();
+			x = conn->read<int>();
+			y = conn->read<int>();
+			z = conn->read<int>();
+			yaw = conn->read<char>();
+			pitch = conn->read<char>();
+		}
 	};
 
 	template <>
@@ -275,6 +623,18 @@ namespace grief {
 	public:
 		int x, z;
 		bool mode;
+
+		virtual void send(Connection *conn) {
+			conn->write(x);
+			conn->write(z);
+			conn->write(mode);
+		}
+
+		virtual void recv(Connection *conn) {
+			x = conn->read<int>();
+			z = conn->read<int>();
+			mode = conn->read<bool>();
+		}
 	};
 
 	template <>
@@ -286,6 +646,14 @@ namespace grief {
 		char sizeX, sizeY, sizeZ;
 		int compressedSize;
 		char *compressedData;
+
+		virtual void send(Connection *conn) {
+			/* XXX */
+		}
+
+		virtual void recv(Connection *conn) {
+			/* XXX */
+		}
 	};
 
 	template <>
@@ -296,6 +664,14 @@ namespace grief {
 		short *coords;
 		short *types;
 		short *metadata;
+
+		virtual void send(Connection *conn) {
+			/* XXX */
+		}
+
+		virtual void recv(Connection *conn) {
+			/* XXX */
+		}
 	};
 
 	template <>
@@ -306,6 +682,22 @@ namespace grief {
 		int z;
 		char type;
 		char metadata;
+
+		virtual void send(Connection *conn) {
+			conn->write(x);
+			conn->write(y);
+			conn->write(z);
+			conn->write(type);
+			conn->write(metadata);
+		}
+
+		virtual void recv(Connection *conn) {
+			x = conn->read<int>();
+			y = conn->read<char>();
+			z = conn->read<int>();
+			type = conn->read<char>();
+			metadata = conn->read<char>();
+		}
 	};
 
 	template <>
@@ -316,12 +708,28 @@ namespace grief {
 		int z;
 		short payloadSize;
 		char *payload;
+
+		virtual void send(Connection *conn) {
+			/* XXX */
+		}
+
+		virtual void recv(Connection *conn) {
+			/* XXX */
+		}
 	};
 
 	template <>
 	class Message<DISCONNECT> : IMessage {
 	public:
 		std::string reason;
+
+		virtual void send(Connection *conn) {
+			conn->write(reason);
+		}
+
+		virtual void recv(Connection *conn) {
+			reason = conn->read<std::string>();
+		}
 	};
 }
 

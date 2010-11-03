@@ -1,8 +1,11 @@
 #ifndef GUARD_GRIEF_CONNECTION
 #define GUARD_GRIEF_CONNECTION
 
+namespace grief {
+	class IMessage;
+}
+
 #include "tcpconnection.h"
-#include "messages.h"
 
 #include <string>
 
@@ -89,6 +92,18 @@ namespace grief {
 			static void write(Connection* conn, T value) {
 				FixEndian<T>::fix(value);
 				return conn->writeBytes(&value, sizeof(T));
+			}
+		};
+
+		template <>
+		class StreamMarshaller<bool> {
+		public:
+			static bool read(Connection *conn) {
+				return (bool) StreamMarshaller<char>::read(conn);
+			}
+
+			static void write(Connection *conn, bool value) {
+				return StreamMarshaller<char>::write(conn, value ? 0x01 : 0x00);
 			}
 		};
 
