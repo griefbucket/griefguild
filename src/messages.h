@@ -2,6 +2,8 @@
 #define GUARD_GRIEF_MESSAGES
 
 #include "connection.h"
+#include "inventory.h"
+
 #include <string>
 
 namespace grief {
@@ -134,20 +136,43 @@ namespace grief {
 	template <>
 	class Message<INVENTORY_LIST> : IMessage {
 	public:
-		int type;
-		short count;
-		char *payload;
+		Inventory inv;
 
 		virtual void send(Connection *conn) {
-			conn->write(type);
-			conn->write(count);
-			/* XXX: payload */
+			conn->write(inv.type);
+			conn->write((short) inv.items.size());
+
+			for ( Inventory::ItemList::const_iterator i = inv.items.begin()
+				; i != inv.items.end()
+				; ++i
+				)
+			{
+				conn->write(i->id);
+
+				if (i->id != -1) {
+					conn->write(i->count);
+					conn->write(i->health);
+				}
+			}
 		}
 
 		virtual void recv(Connection *conn) {
-			type = conn->read<int>();
-			count = conn->read<short>();
-			/* XXX: payload */
+			inv.type = conn->read<InventoryType>();
+			short count = conn->read<short>();
+
+			inv.items.reserve(count);
+			
+			for (short i = 0; i < count; ++i) {
+				Item item;
+				item.id = conn->read<ItemType>();
+
+				if (item.id != -1) {
+					item.count = conn->read<char>();
+					item.health = conn->read<short>();
+				}
+
+				inv.items.push_back(item);
+			}
 		}
 	};
 
