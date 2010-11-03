@@ -3,5 +3,6 @@
 *.la
 *.swp
 .libs
+a.out*
 lib/zeromq*/perf
 lib/zeromq*/devices
