@@ -1,2 +1,7 @@
 *.o
 *.lo
+*.la
+*.swp
+.libs
+lib/zeromq*/perf
+lib/zeromq*/devices
