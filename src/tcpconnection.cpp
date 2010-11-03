@@ -2,7 +2,7 @@
 #include <exception>
 
 namespace grief {
-	TCPConnection::TCPConnection(std::string hostname, int port) {
+	TCPConnection::TCPConnection(const std::string& hostname, int port) {
 		if (0 > (this->sock = socket(AF_INET, SOCK_STREAM, 0))) {
 			throw std::exception();
 		}

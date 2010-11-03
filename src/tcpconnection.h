@@ -14,8 +14,8 @@ namespace grief {
 		struct hostent *host;
 
 	public:
-		TCPConnection(std::string host, int port);
-		~TCPConnection();
+		TCPConnection(const std::string& host, int port);
+		virtual ~TCPConnection();
 
 	protected:
 		void send(void *buf, size_t size);
