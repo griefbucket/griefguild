@@ -37,13 +37,57 @@ namespace grief {
 
 	namespace impl {
 		template <class T>
+		class FixEndian {
+		public:
+			inline static void fix(T &x) {}
+		};
+
+		template <>
+		class FixEndian<short> {
+		public:
+			inline static void fix(short &x) {
+				x = (x >> 8) |
+					(x << 8);
+			}
+		};
+
+		template <>
+		class FixEndian<int> {
+		public:
+			inline static void fix(int &x) {
+				x = (x >> 24) |
+					((x << 8) & 0x00FF0000) |
+					((x >> 8) & 0x0000FF00) |
+					(x << 24);
+			}
+		};
+
+		template <>
+		class FixEndian<long> {
+		public:
+			inline static void fix(long &x) {
+				x = (x >> 56) | 
+					((x << 40) & 0x00FF000000000000) |
+					((x << 24) & 0x0000FF0000000000) |
+					((x << 8)  & 0x000000FF00000000) |
+					((x >> 8)  & 0x00000000FF000000) |
+					((x >> 24) & 0x0000000000FF0000) |
+					((x >> 40) & 0x000000000000FF00) |
+					(x << 56);
+			}
+		};
+
+		template <class T>
 		class StreamMarshaller {
 		public:
 			static T read(Connection* conn) {
-				return *((T*) conn->readBytes(sizeof(T)));
+				T value = *((T*) conn->readBytes(sizeof(T)));
+				FixEndian<T>::fix(value);
+				return value;
 			}
 
 			static void write(Connection* conn, T value) {
+				FixEndian<T>::fix(value);
 				return conn->writeBytes(&value, sizeof(T));
 			}
 		};
@@ -62,7 +106,6 @@ namespace grief {
 			}
 		};
 	}
-
 }
 
 #endif
