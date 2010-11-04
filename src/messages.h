@@ -47,8 +47,12 @@ namespace grief {
 	typedef int EntityID;
 	typedef short ItemID;
 
-	class IMessage {
-	public:
+	struct IMessage {
+		int type;
+
+		explicit IMessage(int type)
+			: type(type) {}
+
 		virtual void send(Connection *conn);
 		virtual void recv(Connection *conn);
 	};
@@ -58,6 +62,8 @@ namespace grief {
 	template <>
 	class Message<KEEP_ALIVE> : IMessage {
 	public:
+		Message() : IMessage(KEEP_ALIVE) {};
+
 		virtual void send(Connection *conn) {
 			conn->write(KEEP_ALIVE);
 		}
@@ -69,6 +75,8 @@ namespace grief {
 	template <>
 	class Message<LOGIN> : IMessage {
 	public:
+		Message() : IMessage(LOGIN) {};
+
 		int protocolVersion;
 		std::string username;
 		std::string password;
@@ -95,6 +103,8 @@ namespace grief {
 	template <>
 	class Message<HANDSHAKE> : IMessage {
 	public:
+		Message() : IMessage(HANDSHAKE) {}
+
 		std::string username;
 
 		virtual void send(Connection *conn) {
@@ -109,6 +119,8 @@ namespace grief {
 	template <>
 	class Message<CHAT> : IMessage {
 	public:
+		Message() : IMessage(CHAT) {}
+
 		std::string message;
 
 		virtual void send(Connection *conn) {
@@ -123,6 +135,8 @@ namespace grief {
 	template <>
 	class Message<TIME_UPDATE> : IMessage {
 	public:
+		Message() : IMessage(TIME_UPDATE) {}
+
 		long time;
 
 		virtual void send(Connection *conn) {
@@ -137,6 +151,8 @@ namespace grief {
 	template <>
 	class Message<INVENTORY_LIST> : IMessage {
 	public:
+		Message() : IMessage(INVENTORY_LIST) {}
+
 		Inventory inv;
 
 		virtual void send(Connection *conn) {
@@ -180,6 +196,8 @@ namespace grief {
 	template <>
 	class Message<PLAYER_SPAWN> : IMessage {
 	public:
+		Message() : IMessage(PLAYER_SPAWN) {}
+
 		int x, y, z;
 
 		virtual void send(Connection *conn) {
@@ -198,6 +216,8 @@ namespace grief {
 	template <>
 	class Message<PLAYER> : IMessage {
 	public:
+		Message() : IMessage(PLAYER) {}
+
 		bool onGround;
 
 		virtual void send(Connection *conn) {
@@ -212,6 +232,8 @@ namespace grief {
 	template <>
 	class Message<PLAYER_MOVE> : IMessage {
 	public:
+		Message() : IMessage(PLAYER_MOVE) {}
+
 		double x, y, stance, z;
 		bool onGround;
 
@@ -235,6 +257,8 @@ namespace grief {
 	template <>
 	class Message<PLAYER_LOOK> : IMessage {
 	public:
+		Message() : IMessage(PLAYER_LOOK) {}
+
 		float yaw, pitch;
 		bool onGround;
 
@@ -254,6 +278,8 @@ namespace grief {
 	template <>
 	class Message<PLAYER_MOVE_LOOK> : IMessage {
 	public:
+		Message() : IMessage(PLAYER_MOVE_LOOK) {}
+
 		double x, y, stance, z;
 		float yaw, pitch;
 		bool onGround;
@@ -282,6 +308,8 @@ namespace grief {
 	template <>
 	class Message<PLAYER_DIG> : IMessage {
 	public:
+		Message() : IMessage(PLAYER_DIG) {}
+
 		char status;
 		int x;
 		char y;
@@ -308,6 +336,8 @@ namespace grief {
 	template <>
 	class Message<PLAYER_BLOCK_PLACE> : IMessage {
 	public:
+		Message() : IMessage(PLAYER_BLOCK_PLACE) {}
+
 		ItemID item;
 		int x;
 		char y;
@@ -334,6 +364,8 @@ namespace grief {
 	template <>
 	class Message<PLAYER_HOLD> : IMessage {
 	public:
+		Message() : IMessage(PLAYER_HOLD) {}
+
 		int unused;
 		ItemID item;
 
@@ -351,6 +383,8 @@ namespace grief {
 	template <>
 	class Message<INVENTORY_ADD> : IMessage {
 	public:
+		Message() : IMessage(INVENTORY_ADD) {}
+
 		ItemID item;
 		char count;
 		short life;
@@ -371,6 +405,8 @@ namespace grief {
 	template <>
 	class Message<ENTITY_SWING> : IMessage {
 	public:
+		Message() : IMessage(ENTITY_SWING) {}
+
 		EntityID entity;
 		bool animate;
 
@@ -388,6 +424,8 @@ namespace grief {
 	template <>
 	class Message<ENTITY_SPAWN> : IMessage {
 	public:
+		Message() : IMessage(ENTITY_SPAWN) {}
+
 		EntityID entity;
 		std::string playerName;
 		int x, y, z;
@@ -421,6 +459,8 @@ namespace grief {
 	template <>
 	class Message<PICKUP_SPAWN> : IMessage {
 	public:
+		Message() : IMessage(PICKUP_SPAWN) {}
+
 		EntityID entity;
 		ItemID item;
 		char count;
@@ -457,6 +497,8 @@ namespace grief {
 	template <>
 	class Message<PICKUP_COLLECT> : IMessage {
 	public:
+		Message() : IMessage(PICKUP_COLLECT) {}
+
 		ItemID item;
 		EntityID entity;
 
@@ -474,6 +516,8 @@ namespace grief {
 	template <>
 	class Message<OBJECT_SPAWN> : IMessage {
 	public:
+		Message() : IMessage(OBJECT_SPAWN) {}
+
 		EntityID entity;
 		char type;
 		int x, y, z;
@@ -498,6 +542,8 @@ namespace grief {
 	template <>
 	class Message<MOB_SPAWN> : IMessage {
 	public:
+		Message() : IMessage(MOB_SPAWN) {}
+
 		EntityID entity;
 		char type;
 		int x, y, z;
@@ -527,6 +573,8 @@ namespace grief {
 	template <>
 	class Message<ENTITY_DESTROY> : IMessage {
 	public:
+		Message() : IMessage(ENTITY_DESTROY) {}
+
 		EntityID entity;
 
 		virtual void send(Connection *conn) {
@@ -541,6 +589,8 @@ namespace grief {
 	template <>
 	class Message<ENTITY> : IMessage {
 	public:
+		Message() : IMessage(ENTITY) {}
+
 		EntityID entity;
 
 		virtual void send(Connection *conn) {
@@ -555,6 +605,8 @@ namespace grief {
 	template <>
 	class Message<ENTITY_MOVE> : IMessage {
 	public:
+		Message() : IMessage(ENTITY_MOVE) {}
+
 		EntityID entity;
 		char x, y, z;
 
@@ -576,6 +628,8 @@ namespace grief {
 	template <>
 	class Message<ENTITY_LOOK> : IMessage {
 	public:
+		Message() : IMessage(ENTITY_LOOK) {}
+
 		EntityID entity;
 		char yaw, pitch;
 
@@ -595,6 +649,8 @@ namespace grief {
 	template <>
 	class Message<ENTITY_LOOK_MOVE> : IMessage {
 	public:
+		Message() : IMessage(ENTITY_LOOK_MOVE) {}
+
 		EntityID entity;
 		char x, y, z;
 		char yaw, pitch;
@@ -621,6 +677,8 @@ namespace grief {
 	template <>
 	class Message<ENTITY_TELEPORT> : IMessage {
 	public:
+		Message() : IMessage(ENTITY_TELEPORT) {}
+
 		EntityID entity;
 		int x, y, z;
 		char yaw, pitch;
@@ -647,6 +705,8 @@ namespace grief {
 	template <>
 	class Message<CHUNK_PRELOAD> : IMessage {
 	public:
+		Message() : IMessage(CHUNK_PRELOAD) {}
+
 		int x, z;
 		bool mode;
 
@@ -666,6 +726,8 @@ namespace grief {
 	template <>
 	class Message<CHUNK_DATA> : IMessage {
 	public:
+		Message() : IMessage(CHUNK_DATA) {}
+
 		MapChunk chunk;
 
 		virtual void send(Connection *conn) {
@@ -710,6 +772,8 @@ namespace grief {
 	template <>
 	class Message<BLOCK_CHANGE_MULTI> : IMessage {
 	public:
+		Message() : IMessage(BLOCK_CHANGE_MULTI) {}
+
 		int chunkX, chunkZ;
 		short numBlocks;
 		short *coords;
@@ -728,6 +792,8 @@ namespace grief {
 	template <>
 	class Message<BLOCK_CHANGE> : IMessage {
 	public:
+		Message() : IMessage(BLOCK_CHANGE) {}
+
 		int x;
 		char y;
 		int z;
@@ -754,6 +820,8 @@ namespace grief {
 	template <>
 	class Message<ENTITY_COMPLEX> : IMessage {
 	public:
+		Message() : IMessage(ENTITY_COMPLEX) {}
+
 		int x;
 		short y;
 		int z;
@@ -772,6 +840,8 @@ namespace grief {
 	template <>
 	class Message<DISCONNECT> : IMessage {
 	public:
+		Message() : IMessage(DISCONNECT) {}
+
 		std::string reason;
 
 		virtual void send(Connection *conn) {
