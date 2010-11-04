@@ -38,7 +38,7 @@ namespace grief {
 			impl::StreamMarshaller<T>::write(this, value);	
 		}
 
-		char *readCompressedBytes(size_t length);
+		char *readCompressedBytes(size_t length, size_t *sizeOut = 0);
 	};
 
 	namespace impl {
