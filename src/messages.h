@@ -676,10 +676,34 @@ namespace grief {
 			chunk.x = conn->read<int>();
 			chunk.y = conn->read<short>();
 			chunk.z = conn->read<int>();
-			chunk.sizeX = conn->read<char>();
-			chunk.sizeY = conn->read<char>();
-			chunk.sizeZ = conn->read<char>();
-			/* XXX: ungzip the data */
+			chunk.sizeX = ((short) conn->read<char>()) + 1;
+			chunk.sizeY = ((short) conn->read<char>()) + 1;
+			chunk.sizeZ = ((short) conn->read<char>()) + 1;
+
+			int compressedSize = conn->read<int>();
+			char *rawData = conn->readCompressedBytes(compressedSize);
+			long numBlocks = chunk.sizeX * chunk.sizeY * chunk.sizeZ;
+
+			for (long i = 0; i < numBlocks; ++i) 
+				chunk.block(i).type = *(rawData++);
+
+			for (long i = 0; i < numBlocks; i += 2) {
+				/* Q: Are these in the right order? */
+				chunk.block(i).meta = (*rawData) & 0x0F;
+				chunk.block(i+1).meta = (*rawData++) & 0xF0;
+			}
+
+			for (long i = 0; i < numBlocks; i += 2) {
+				/* Q: ordering? */
+				chunk.block(i).light = (*rawData) & 0x0F;
+				chunk.block(i+1).light = (*rawData++) & 0xF0;
+			}
+
+			for (long i = 0; i < numBlocks; i += 2) {
+				/* Q: ordering */
+				chunk.block(i).skylight = (*rawData) & 0x0F;
+				chunk.block(i).skylight = (*rawData++) & 0xF0;
+			}
 		}
 	};
 

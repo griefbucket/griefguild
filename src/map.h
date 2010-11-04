@@ -20,6 +20,7 @@ namespace grief {
 		~MapChunk();
 
 		Block &block(short x, short y, short z);
+		Block &block(long i);
 
 	private:
 		void alloc();

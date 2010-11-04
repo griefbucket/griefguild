@@ -24,6 +24,11 @@ namespace grief {
 			];
 	}
 
+	Block& MapChunk::block(long i) {
+		alloc();
+		return blocks[i];
+	}
+
 	void MapChunk::alloc() {
 		if (blocks) return;
 
