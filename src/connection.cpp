@@ -68,6 +68,14 @@ namespace grief {
 		return buf;
 	}
 
+	IMessage* Connection::nextMessage() {
+		if (msg) delete msg;
+
+		/* XXX: OH GOD MASSIVE SWITCH TABLE */
+
+		return msg;
+	}
+
 	char* Connection::readBytes(size_t len) {
 		if (bufSize < len) {
 			delete[] buf;

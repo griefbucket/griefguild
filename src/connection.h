@@ -39,6 +39,8 @@ namespace grief {
 		}
 
 		char *readCompressedBytes(size_t length, size_t *sizeOut = 0);
+
+		IMessage *nextMessage();
 	};
 
 	namespace impl {
