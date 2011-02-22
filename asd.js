@@ -841,7 +841,6 @@ net.createServer(function(s) {
 	remoteSock = net.createConnection(remote[1], remote[0]);
 
 	s.on('data', function(d) {
-		sys.debug('Sending ' + d.length + ' bytes to remote');
 		remoteSock.write(d);
 	});
 
@@ -871,14 +870,11 @@ net.createServer(function(s) {
 					return s.end();
 				}
 
-				sys.debug(outBuf.length);
-
 				var read = handler(outBuf.slice(1, outBuf.length), {});
 
 				if (read > -1) {
 					sys.debug((read + 1) + '/' + outBuf.length);
 					outBuf = outBuf.slice(read + 1, outBuf.length);
-					sys.debug('Read a ' + p.packetID);
 				}
 
 				if (read === undefined) {
@@ -888,7 +884,6 @@ net.createServer(function(s) {
 			}
 		}
 
-		sys.debug('Sending ' + d.length + ' bytes to local');
 		s.write(d);
 	});
 
