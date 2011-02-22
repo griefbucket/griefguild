@@ -698,13 +698,43 @@ var serverToClient =
 			if (p.vars.item_uses === null)
 				return -1;
 
+			out1('set slot ' + sys.inspect(p.vars));
 			return 1 + 2 + 2 + 1 + 2;
 		}
 
 	, 0x68 :
 		/* Window items */
 		function(buf, state) {
+			var p = Binary.parse(buf);
+			p
+				.word8bs('window_id')
+				.word16bs('count')
+				;
 
+			if (p.vars.count === null)
+				return -1;
+
+			var read = 1 + 2;
+
+			for (var i = 0; i < p.vars.count; ++i) {
+				var p2 = Binary.parse(buf.slice(read, buf.length));
+				p2
+					.word16bs('item_id')
+					.word8bs('count')
+					.word16bs('uses')
+					;
+
+				if (p2.vars.item_id === -1) {
+					read += 2;
+					continue;
+				}
+				else {
+					read += 2 + 1 + 2;
+					continue;
+				}
+			}
+
+			return read;
 		}
 
 	, 0x69 :
