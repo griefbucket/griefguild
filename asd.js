@@ -170,8 +170,8 @@ var serverToClient =
 			var p = Binary.parse(buf);
 			p
 				.word64bs('x')
-				.word64bs('stance')
 				.word64bs('y')
+				.word64bs('stance')
 				.word64bs('z')
 				.word32bs('yaw')
 				.word32bs('pitch')
