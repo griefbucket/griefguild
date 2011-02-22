@@ -543,7 +543,7 @@ var serverToClient =
 				.buffer('data', p.vars.len_data)
 				;
 
-			if (p.vars.data === null)
+			if (p.vars.len_data === null)
 				return -1;
 
 			if (p.vars.data.length < p.vars.len_data)
