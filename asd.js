@@ -384,7 +384,7 @@ var serverToClient =
 			if (p.vars.entity_id === null)
 				return -1;
 
-			out1('entity ' + sys.inspect(p.vars));
+			out1('destroy entity ' + sys.inspect(p.vars));
 			return 4;
 		}
 
@@ -399,7 +399,7 @@ var serverToClient =
 			if (p.vars.entity_id === null)
 				return -1;
 
-			out1('destroy entity ' + sys.inspect(p.vars));
+			out1('entity ' + sys.inspect(p.vars));
 			return 4;
 		}
 
