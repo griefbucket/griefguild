@@ -353,6 +353,12 @@ var serverToClient =
 			return 2;
 		}
 
+	, 0x09 :
+		/* ??? Sent when 'respawn' clicked */
+		function(buf, state) {
+			return 0;
+		}
+
 	, 0x0D :
 		/* Player position and look */
 		function(buf, state) {
