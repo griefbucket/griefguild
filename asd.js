@@ -128,6 +128,7 @@ var serverToClient =
 			if (p.vars.unused === null)
 				return -1;
 
+			out1('entity equipped ' + sys.inspect(p.vars));
 			return 4 + 2 + 2 + 2;
 		}
 
@@ -144,6 +145,7 @@ var serverToClient =
 			if (p.vars.z === null)
 				return -1;
 
+			out1('spawn position ' + sys.inspect(p.vars));
 			return 4 + 4 + 4;
 		}
 
@@ -158,6 +160,7 @@ var serverToClient =
 			if (p.vars.health === null)
 				return -1;
 
+			out1('update health ' + sys.inspect(p.vars));
 			return 2;
 		}
 
@@ -178,6 +181,7 @@ var serverToClient =
 			if (p.vars.on_ground === null)
 				return -1;
 
+			out1('player position ' + sys.inspect(p.vars));
 			return 8 + 8 + 8 + 8 + 4 + 4 + 1;
 		}
 
@@ -193,6 +197,7 @@ var serverToClient =
 			if (p.vars.animation === null)
 				return -1;
 
+			out1('animate entity ' + sys.inspect(p.vars));
 			return 4 + 1;
 		}
 
@@ -208,6 +213,7 @@ var serverToClient =
 			if (p.vars.action === null)
 				return -1;
 
+			out1('entity action ' + sys.inspect(p.vars));
 			return 4 + 1;
 		}
 
@@ -230,6 +236,7 @@ var serverToClient =
 			if (p.vars.holding === null)
 				return -1;
 
+			out1('named entity spawn ' + sys.inspect(p.vars));
 			return 4 + 2 + p.vars.len_name + 4 + 4 + 4 + 1 + 1 + 2;
 		}
 
@@ -253,6 +260,7 @@ var serverToClient =
 			if (p.vars.roll === null)
 				return -1;
 
+			out1('pickup spawn ' + sys.inspect(p.vars));
 			return 4 + 2 + 1 + 2 + 4 + 4 + 4 + 1 + 1 + 1;
 		}
 
@@ -268,6 +276,7 @@ var serverToClient =
 			if (p.vars.collector_id === null)
 				return -1;
 
+			out1('collect item ' + sys.inspect(p.vars));
 			return 4 + 4;
 		}
 
@@ -310,6 +319,7 @@ var serverToClient =
 				return -1;
 
 			return 4 + 1 + 4 + 4 + 4 + 1 + 1 + md.length;
+			out1('mob spawn ' + sys.inspect(p.vars));
 		}
 
 	, 0x19 :
@@ -329,6 +339,7 @@ var serverToClient =
 			if (p.vars.type === null)
 				return -1;
 
+			out1('painting ' + sys.inspect(p.vars));
 			return 4 + 2 + p.vars.len_title + 4 + 4 + 4 + 4;
 		}
 
@@ -346,6 +357,7 @@ var serverToClient =
 			if (p.vars.vel_z === null)
 				return -1;
 
+			out1('entity velocity ' + sys.inspect(p.vars));
 			return 4 + 2 + 2 + 2;
 		}
 
@@ -360,6 +372,7 @@ var serverToClient =
 			if (p.vars.entity_id === null)
 				return -1;
 
+			out1('entity ' + sys.inspect(p.vars));
 			return 4;
 		}
 
@@ -374,6 +387,7 @@ var serverToClient =
 			if (p.vars.entity_id === null)
 				return -1;
 
+			out1('destroy entity ' + sys.inspect(p.vars));
 			return 4;
 		}
 
@@ -391,6 +405,7 @@ var serverToClient =
 			if (p.vars.rel_z === null)
 				return -1;
 
+			out1('entity relative move ' + sys.inspect(p.vars));
 			return 4 + 1 + 1 + 1;
 		}
 
@@ -407,6 +422,7 @@ var serverToClient =
 			if (p.vars.pitch === null)
 				return -1;
 
+			out1('entity look ' + sys.inspect(p.vars));
 			return 4 + 1 + 1;
 		}
 
@@ -426,6 +442,7 @@ var serverToClient =
 			if (p.vars.pitch === null)
 				return -1;
 
+			out1('entity look & move ' + sys.inspect(p.vars));
 			return 4 + 1 + 1 + 1 + 1 + 1;
 		}
 
@@ -445,6 +462,7 @@ var serverToClient =
 			if (p.vars.pitch === null)
 				return -1;
 
+			out1('entity teleport ' + sys.inspect(p.vars));
 			return 4 + 4 + 4 + 4 + 1 + 1;
 		}
 
@@ -460,6 +478,7 @@ var serverToClient =
 			if (p.vars.status === null)
 				return -1;
 
+			out1('entity status ' + sys.inspect(p.vars));
 			return 4 + 1;
 		}
 
@@ -477,6 +496,7 @@ var serverToClient =
 				return -1;
 
 			return 4 + md.length;
+			out1('entity metadata ' + sys.inspect(p.vars));
 		}
 
 	, 0x32 :
@@ -492,6 +512,7 @@ var serverToClient =
 			if (p.vars.mode === null)
 				return -1;
 
+			out1('prechunk ' + sys.inspect(p.vars));
 			return 4 + 4 + 1;
 		}
 
@@ -516,6 +537,7 @@ var serverToClient =
 			if (p.vars.data.length < p.vars.len_data)
 				return -1;
 
+			out1('map chunk ' + sys.inspect(p.vars));
 			return 4 + 2 + 4 + 1 + 1 + 1 + 4 + p.vars.len_data;
 		}
 
@@ -540,6 +562,7 @@ var serverToClient =
 				return -1;
 			}
 
+			out1('multi block change ' + sys.inspect(p.vars));
 			return 4 + 4 + 2 + 4 * (p.vars.len_array);
 		}
 
@@ -558,6 +581,7 @@ var serverToClient =
 			if (p.vars.metadata === null)
 				return -1;
 
+			out1('block change ' + sys.inspect(p.vars));
 			return 4 + 2 + 4 + 1 + 1;
 		}
 
@@ -576,6 +600,7 @@ var serverToClient =
 			if (p.vars.pitch === null)
 				return -1;
 
+			out1('play note ' + sys.inspect(p.vars));
 			return 4 + 2 + 4 + 1 + 1;
 		}
 	
@@ -601,6 +626,7 @@ var serverToClient =
 				return -1;
 			}
 
+			out1('explosion ' + sys.inspect(p.vars));
 			return 4 + 4 + 4 + 2 + 2 + 3 * p.vars.count;
 		}
 
@@ -619,6 +645,7 @@ var serverToClient =
 			if (p.vars.num_slots === null)
 				return -1;
 
+			out1('open window ' + sys.inspect(p.vars));
 			return 1 + 1 + 2 + p.vars.len_title + 1;
 		}
 
@@ -633,6 +660,7 @@ var serverToClient =
 			if (p.vars.window_id === null)
 				return -1;
 
+			out1('close window ' + sys.inspect(p.vars));
 			return 1;
 		}
 
@@ -680,6 +708,7 @@ var serverToClient =
 			if (p.vars.value === null)
 				return -1;
 
+			out1('update progress ' + sys.inspect(p.vars));
 			return 1 + 2 + 2;
 		}
 
@@ -696,6 +725,7 @@ var serverToClient =
 			if (p.vars.accepted === null)
 				return -1;
 
+			out1('transaction status ' + sys.inspect(p.vars));
 			return 1 + 2 + 1;
 		}
 
@@ -725,6 +755,7 @@ var serverToClient =
 				return -1;
 			}
 
+			out1('update sign ' + sys.inspect(p.vars));
 			return 4 + 2 + 4 
 				+ 2 + p.vars.len_first
 				+ 2 + p.vars.len_second
@@ -750,6 +781,7 @@ var serverToClient =
 				return -1;
 			}
 
+			out1('disconnect ' + sys.inspect(p.vars));
 			return 2 * p.vars.len_reason;
 		}
 	};
