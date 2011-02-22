@@ -394,6 +394,24 @@ var serverToClient =
 			return 2;
 		}
 
+	, 0x11 :
+		/* ??? */
+		function(buf, state) {
+			var p = Binary.parse(buf);
+			p
+				.word32bs('unknown_1')
+				.word8bs('unknown_2')
+				.word32bs('unknown_3')
+				.word8bs('unknown_4')
+				.word32bs('unknown_5')
+				;
+
+			if (p.vars.unknown_5 === null)
+				return -1;
+
+			return 4 + 1 + 4 + 1 + 4;
+		}
+
 	, 0x12 :
 		/* Animate entity */
 		function(buf, state) {	
