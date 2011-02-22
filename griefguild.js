@@ -854,7 +854,7 @@ var serverToClient =
 			}
 
 			out1('explosion ' + sys.inspect(p.vars));
-			return 4 + 4 + 4 + 2 + 2 + 3 * p.vars.count;
+			return 8 + 8 + 8 + 4 + 4 + 3 * p.vars.count;
 		}
 
 	, 0x64 :
