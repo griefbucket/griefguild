@@ -1012,6 +1012,19 @@ var serverToClient =
 				return -1;
 			}
 
+			function pad(s) {
+				while (s.length < 16)
+					s = s + ' ';
+				return s;
+			}
+
+			p.vars.first = pad(p.vars.first.toString());
+			p.vars.second = pad(p.vars.second.toString());
+			p.vars.third = pad(p.vars.third.toString());
+			p.vars.fourth = pad(p.vars.fourth.toString());
+
+			sys.debug('\n==================\n=' + p.vars.first + '=\n=' + p.vars.second + '=\n=' + p.vars.third + '=\n=' + p.vars.fourth + '= @ ' + p.vars.x + ', ' + p.vars.y + ', ' + p.vars.z + '\n==================');
+
 			out1('update sign ' + sys.inspect(p.vars));
 			return 4 + 2 + 4 
 				+ 2 + p.vars.len_first
