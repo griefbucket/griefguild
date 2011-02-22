@@ -851,6 +851,8 @@ net.createServer(function(s) {
 	});
 
 	remoteSock.on('data', function(d) {
+		remoteSock.pause();
+
 		if (typeof(d) === 'string')
 			d = new Buffer(d, 'ascii');
 
@@ -885,6 +887,8 @@ net.createServer(function(s) {
 		}
 
 		s.write(d);
+
+		remoteSock.resume();
 	});
 
 	remoteSock.on('end', function() {
