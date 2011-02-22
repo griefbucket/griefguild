@@ -295,12 +295,24 @@ var serverToClient =
 			if (p.vars.z === null)
 				return -1;
 
+			out1('vehicle spawn ' + sys.inspect(p.vars));
 			return 4 + 1 + 4 + 4 + 4;
 		}
 
 	, 0x18 :
 		/* Mob spawn */
 		function(buf, state) {
+			/*
+				['18' 
+				, '00', '00', '00', '09'
+				, '5b'
+				, '00', '00', '0b', '90'
+				, '00', '00', '08', '00'
+				, 'ff', 'ff', 'fd', '7d'
+				, 'e1'
+				, '00'
+				, '00', '00', '10', '0f', '7f']
+			*/
 			var p = Binary.parse(buf);
 			p
 				.word32bs('entity_id')
@@ -315,11 +327,11 @@ var serverToClient =
 
 			/* XXX: This is tricky */
 			var md = p.vars.metadata;
-			if (md === null || md[md.length - 1] !== 0x7F)
+			if (md === null || buf[19 + md.length] !== 0x7F)
 				return -1;
 
-			return 4 + 1 + 4 + 4 + 4 + 1 + 1 + md.length;
 			out1('mob spawn ' + sys.inspect(p.vars));
+			return 4 + 1 + 4 + 4 + 4 + 1 + 1 + md.length + 1;
 		}
 
 	, 0x19 :
@@ -492,11 +504,11 @@ var serverToClient =
 				;
 
 			var md = p.vars.metadata;
-			if (md === null || md[md.length - 1] !== 0x7F)
+			if (md === null || buf[4 + md.length] !== 0x7F)
 				return -1;
 
-			return 4 + md.length;
 			out1('entity metadata ' + sys.inspect(p.vars));
+			return 4 + md.length + 1;
 		}
 
 	, 0x32 :
