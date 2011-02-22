@@ -380,6 +380,20 @@ var serverToClient =
 			return 8 + 8 + 8 + 8 + 4 + 4 + 1;
 		}
 
+	, 0x10 :
+		/* Holding change */
+		function(buf, state) {
+			var p = Binary.parse(buf);
+			p
+				.word16bs('slot')
+				;
+
+			if (p.vars.slot === null)
+				return -1;
+
+			return 2;
+		}
+
 	, 0x12 :
 		/* Animate entity */
 		function(buf, state) {	
