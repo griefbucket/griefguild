@@ -492,17 +492,6 @@ var serverToClient =
 	, 0x18 :
 		/* Mob spawn */
 		function(buf, state) {
-			/*
-				['18' 
-				, '00', '00', '00', '09'
-				, '5b'
-				, '00', '00', '0b', '90'
-				, '00', '00', '08', '00'
-				, 'ff', 'ff', 'fd', '7d'
-				, 'e1'
-				, '00'
-				, '00', '00', '10', '0f', '7f']
-			*/
 			var p = Binary.parse(buf);
 			p
 				.word32bs('entity_id')
@@ -515,7 +504,6 @@ var serverToClient =
 				.scan('metadata', new Buffer([0x7F]))
 				;
 
-			/* XXX: This is tricky */
 			var md = p.vars.metadata;
 			if (md === null || buf[19 + md.length] !== 0x7F)
 				return -1;
@@ -1040,8 +1028,6 @@ net.createServer(function(s) {
 		remoteSock = null;
 	});
 
-	var ticks = 0;
-
 	remoteSock.on('data', function(d) {
 		if (typeof(d) === 'string')
 			d = new Buffer(d, 'ascii');
@@ -1085,12 +1071,6 @@ net.createServer(function(s) {
 
 				if (read > -1) {
 					outBuf = outBuf.slice(read + 1, outBuf.length);
-					ticks += 1;
-
-					if (ticks == 20) {
-						ticks = 0;
-						sys.debug(outBuf.length);
-					}
 				}
 				else if (read === -1) {
 					break;
