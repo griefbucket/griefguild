@@ -104,7 +104,7 @@ var serverToClient =
 		function(buf, state) {
 			var p = Binary.parse(buf);
 			p
-				.word32bs('time')
+				.word64bs('time')
 				;
 
 			if (p.vars.time === null)
