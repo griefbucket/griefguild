@@ -427,8 +427,8 @@ var serverToClient =
 			var p = Binary.parse(buf);
 			p
 				.word32bs('entity_id')
-				.word1bs('yaw')
-				.word1bs('pitch')
+				.word8bs('yaw')
+				.word8bs('pitch')
 				;
 
 			if (p.vars.pitch === null)
@@ -444,11 +444,11 @@ var serverToClient =
 			var p = Binary.parse(buf);
 			p	
 				.word32bs('entity_id')
-				.word1bs('rel_x')
-				.word1bs('rel_y')
-				.word1bs('rel_z')
-				.word1bs('yaw')
-				.word1bs('pitch')
+				.word8bs('rel_x')
+				.word8bs('rel_y')
+				.word8bs('rel_z')
+				.word8bs('yaw')
+				.word8bs('pitch')
 				;
 
 			if (p.vars.pitch === null)
