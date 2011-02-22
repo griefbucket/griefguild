@@ -36,11 +36,11 @@ var serverToClient =
 		function(buf, state) {
 			var p = Binary.parse(buf);
 			p
-				.word32bs('proto_version')
-				.word16bs('len_username')
-				.buffer('username', p.vars.len_username)
-				.word16bs('len_password')
-				.buffer('password', p.vars.len_password)
+				.word32bs('entity_id')
+				.word16bs('len_unused_1')
+				.buffer('unused_1', p.vars.len_unused_1)
+				.word16bs('len_unused_2')
+				.buffer('unused_2', p.vars.len_unused_2)
 				.word64bs('map_seed')
 				.word8bs('dimension')
 				;
@@ -48,11 +48,11 @@ var serverToClient =
 			if (p.vars.dimension === null)
 				return -1;
 
-			p.vars.username = p.vars.username.toString();
-			p.vars.password = p.vars.password.toString();
+			p.vars.unused_1 = p.vars.unused_1.toString();
+			p.vars.unused_2 = p.vars.unused_2.toString();
 
 			out1('login ' + sys.inspect(p.vars));
-			return 4 + 2 + p.vars.len_username + 2 + p.vars.len_password + 8 + 1;
+			return 4 + 2 + p.vars.len_unused_1 + 2 + p.vars.len_unused_2 + 8 + 1;
 		}
 
 	, 0x02 :
