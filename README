@@ -1,0 +1,1 @@
+Depends on https://github.com/substack/node-binary (will eventually write my own because NIH and that one doesn't support reading floats/doubles from the stream and doesn't keep track of the number of bytes read from the stream and etc).
