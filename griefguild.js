@@ -3,7 +3,6 @@ var
 	, Binary = require('binary')
 	, sys = require('sys')
 	, remote = ['localhost', 25565]
-	, remoteSock = null
 	;
 
 function appendBuf(buf1, buf2) {
@@ -1006,29 +1005,23 @@ var serverToClient =
 		}
 	};
 
-net.createServer(function(s) {
-	if (remoteSock) {
-		sys.debug('Already connected');
-		return s.destroy();
-	}
-
+net.createServer(function(sLocal) {
 	var outBuf = null;
 
 	sys.debug('Connecting to remote');
 
-	remoteSock = net.createConnection(remote[1], remote[0]);
+	sRemote = net.createConnection(remote[1], remote[0]);
 
-	s.on('data', function(d) {
-		remoteSock.write(d);
+	sLocal.on('data', function(d) {
+		sRemote.write(d);
 	});
 
-	s.on('end', function() {
+	sLocal.on('end', function() {
 		sys.debug('Ending connection to remote');
-		remoteSock.end();
-		remoteSock = null;
+		sRemote.end();
 	});
 
-	remoteSock.on('data', function(d) {
+	sRemote.on('data', function(d) {
 		if (typeof(d) === 'string')
 			d = new Buffer(d, 'ascii');
 
@@ -1049,7 +1042,7 @@ net.createServer(function(s) {
 				sys.debug('Sitting on a ' + p.packetID);
 				sys.debug('Last message ' + lastMessage);
 				sys.debug(sys.inspect(outBuf.slice(0, 64)));
-				return s.end();
+				return sLocal.end();
 			}
 
 			if (p.packetID !== null) {
@@ -1058,7 +1051,7 @@ net.createServer(function(s) {
 				if (handler === undefined) {
 					sys.debug('Unknown packet ' + p.packetID);
 					sys.debug('Last message ' + lastMessage);
-					return s.end();
+					return sLocal.end();
 				}
 
 				var read = handler(outBuf.slice(1, outBuf.length), {});
@@ -1066,7 +1059,7 @@ net.createServer(function(s) {
 				if (read === undefined) {
 					sys.debug('Unhandled packet ' + p.packetID);
 					sys.debug('Last message ' + lastMessage);
-					return s.end();
+					return sLocal.end();
 				}
 
 				if (read > -1) {
@@ -1078,13 +1071,12 @@ net.createServer(function(s) {
 			}
 		}
 
-		s.write(d);
+		sLocal.write(d);
 	});
 
-	remoteSock.on('end', function() {
+	sRemote.on('end', function() {
 		sys.debug('Ending connection to local');
-		s.end();
-		remoteSock = null;
+		sLocal.end();
 	});
 }).listen(6000);
 
