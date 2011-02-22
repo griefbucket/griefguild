@@ -19,8 +19,11 @@ function appendBuf(buf1, buf2) {
 	return newBuf;
 }
 
+var lastMessage;
+
 function out1(s) {
-	sys.debug(s);
+	lastMessage = s;
+	//sys.debug(s);
 }
 
 var serverToClient = 
@@ -850,23 +853,28 @@ net.createServer(function(s) {
 		remoteSock = null;
 	});
 
-	remoteSock.on('data', function(d) {
-		remoteSock.pause();
+	var ticks = 0;
 
+	remoteSock.on('data', function(d) {
 		if (typeof(d) === 'string')
 			d = new Buffer(d, 'ascii');
 
 		outBuf = appendBuf(outBuf, d);	
 
-		if (outBuf.length > 1) {
+		/* There's a bug in Binary.scan with the
+		 * version of node that I'm running which causes
+		 * it to fuck up if the thing isn't in the stream...
+		 * so introduce some delay */
+		while (outBuf.length > 3000) {
 			var p = Binary.parse(outBuf)
-				.word8bs('packetID')
+				.word8bu('packetID')
 				.vars
 				;
 
-			if (outBuf.length > 1000000) {
+			if (outBuf.length > 2 * 1024 * 1024) {
 				sys.debug('Too much unparsed data, quitting');
 				sys.debug('Sitting on a ' + p.packetID);
+				sys.debug('Last message ' + lastMessage);
 				sys.debug(sys.inspect(outBuf.slice(0, 64)));
 				return s.end();
 			}
@@ -876,26 +884,34 @@ net.createServer(function(s) {
 
 				if (handler === undefined) {
 					sys.debug('Unknown packet ' + p.packetID);
+					sys.debug('Last message ' + lastMessage);
 					return s.end();
 				}
 
 				var read = handler(outBuf.slice(1, outBuf.length), {});
 
-				if (read > -1) {
-					sys.debug((read + 1) + '/' + outBuf.length);
-					outBuf = outBuf.slice(read + 1, outBuf.length);
-				}
-
 				if (read === undefined) {
 					sys.debug('Unhandled packet ' + p.packetID);
+					sys.debug('Last message ' + lastMessage);
 					return s.end();
+				}
+
+				if (read > -1) {
+					outBuf = outBuf.slice(read + 1, outBuf.length);
+					ticks += 1;
+
+					if (ticks == 20) {
+						ticks = 0;
+						sys.debug(outBuf.length);
+					}
+				}
+				else if (read === -1) {
+					break;
 				}
 			}
 		}
 
 		s.write(d);
-
-		remoteSock.resume();
 	});
 
 	remoteSock.on('end', function() {
