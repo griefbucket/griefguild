@@ -584,7 +584,7 @@ var serverToClient =
 			var p = Binary.parse(buf);
 			p
 				.word32bs('x')
-				.word16bs('y')
+				.word8bs('y')
 				.word32bs('z')
 				.word8bs('type')
 				.word8bs('metadata')
@@ -594,7 +594,7 @@ var serverToClient =
 				return -1;
 
 			out1('block change ' + sys.inspect(p.vars));
-			return 4 + 2 + 4 + 1 + 1;
+			return 4 + 1 + 4 + 1 + 1;
 		}
 
 	, 0x36 :
