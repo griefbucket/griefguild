@@ -28,7 +28,7 @@ var serverToClient =
 		/* Keep alive */
 		function(buf, state) {
 			out1('keep-alive');
-			return -1;
+			return 0;
 		}
 
 	, 0x01 :
