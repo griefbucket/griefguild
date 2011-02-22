@@ -864,6 +864,13 @@ net.createServer(function(s) {
 				.vars
 				;
 
+			if (outBuf.length > 1000000) {
+				sys.debug('Too much unparsed data, quitting');
+				sys.debug('Sitting on a ' + p.packetID);
+				sys.debug(sys.inspect(outBuf.slice(0, 64)));
+				return s.end();
+			}
+
 			if (p.packetID !== null) {
 				var handler = serverToClient[p.packetID];
 
