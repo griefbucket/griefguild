@@ -3,7 +3,7 @@
 *.la
 *.gch
 *.swp
+*.node
+*.dSYM
 .libs
 a.out*
-lib/zeromq*/perf
-lib/zeromq*/devices
