@@ -22,7 +22,6 @@ var lastMessage;
 
 function out1(s, p, len) {
 	lastMessage = s;
-	sys.debug(s + ' read ' + (len + 1));
 	//sys.debug(s);
 }
 
