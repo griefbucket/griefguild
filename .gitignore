@@ -7,3 +7,5 @@
 *.dSYM
 .libs
 a.out*
+build
+.lock-wscript
