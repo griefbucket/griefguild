@@ -1,7 +1,9 @@
 var
 	net = require('net')
 	, Binary = require('binary')
+	, zlib = require('./addons/zlib')
 	, sys = require('sys')
+	//, remote = ['localhost', 25565]
 	, remote = ['anarchy.gleany.com', 25565]
 	;
 
@@ -782,14 +784,52 @@ var serverToClient =
 				.word8bs('size_y')
 				.word8bs('size_z')
 				.word32bs('len_data')
-				.buffer('data', p.vars.len_data)
+				.buffer('raw_data', p.vars.len_data)
 				;
 
 			if (p.vars.len_data === null)
 				return -1;
 
-			if (p.vars.data.length < p.vars.len_data)
+			if (p.vars.raw_data.length < p.vars.len_data)
 				return -1;
+
+			p.vars.data = zlib.inflate(p.vars.raw_data);
+
+			var numBlocks =
+				(p.vars.size_x + 1)
+				* (p.vars.size_y + 1)
+				* (p.vars.size_z + 1)
+				;
+				
+			var expectedSize = numBlocks * 2.5;
+
+			if (expectedSize != p.vars.data.length) {
+				sys.debug('PROTOCOL ERROR: Expected ' + expectedSize + ', got ' + p.vars.data.length);
+				process.exit(1);
+			}
+
+			sys.debug('map chunk ' + sys.inspect([p.vars.x, p.vars.y, p.vars.z]));
+
+			var chunkIDCounts = {};
+
+			for (var i = 0; i < numBlocks; ++i) {
+				var id = p.vars.data[i];
+
+				if (!chunkIDCounts[id]) {
+					chunkIDCounts[id] = 1;
+				}
+				else {
+					chunkIDCounts[id] += 1;
+				}
+			}
+
+			var chunkBlockCounts = {};
+
+			for (var id in chunkIDCounts) {
+				chunkBlockCounts[itemIDs[id]] = chunkIDCounts[id];
+			}
+
+			sys.debug(sys.inspect(chunkBlockCounts));
 
 			var len = 4 + 2 + 4 + 1 + 1 + 1 + 4 + p.vars.len_data;
 			out1('map chunk', p, len);
