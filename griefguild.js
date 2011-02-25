@@ -808,28 +808,34 @@ var serverToClient =
 				process.exit(1);
 			}
 
-			sys.debug('map chunk ' + sys.inspect([p.vars.x, p.vars.y, p.vars.z]));
+			var iLocs = {};
+			var interesting = [20, 23, 25, 47, 52];
 
-			var chunkIDCounts = {};
+			var s_x = p.vars.size_x + 1;
+			var s_y = p.vars.size_y + 1;
+			var s_z = p.vars.size_z + 1;
 
-			for (var i = 0; i < numBlocks; ++i) {
-				var id = p.vars.data[i];
+			for (var x = 0; x < s_x; ++x) {
+				for (var y = 0; y < s_y; ++y) {
+					for (var z = 0; z < s_z; ++z) {
 
-				if (!chunkIDCounts[id]) {
-					chunkIDCounts[id] = 1;
-				}
-				else {
-					chunkIDCounts[id] += 1;
+						var id = p.vars.data[y + z*s_y + x*s_y*s_z];
+						var block = itemIDs[id];
+
+						if (interesting.indexOf(id) !== -1) {	
+							sys.debug('Interesting ' + block + ' @(' + (x + p.vars.x) + ', ' + (y + p.vars.y) + ', ' + (z + p.vars.z) + ')');
+
+							if (!iLocs[block]) {
+								iLocs[block] = [];
+							}
+
+							iLocs[block].push([x, y, z]);
+						}
+					}
 				}
 			}
 
-			var chunkBlockCounts = {};
-
-			for (var id in chunkIDCounts) {
-				chunkBlockCounts[itemIDs[id]] = chunkIDCounts[id];
-			}
-
-			sys.debug(sys.inspect(chunkBlockCounts));
+			//sys.debug(sys.inspect(iLocs));
 
 			var len = 4 + 2 + 4 + 1 + 1 + 1 + 4 + p.vars.len_data;
 			out1('map chunk', p, len);
